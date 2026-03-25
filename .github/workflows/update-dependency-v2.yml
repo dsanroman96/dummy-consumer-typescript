@@ -3,14 +3,6 @@ name: Update dependency version
 on:
   repository_dispatch:
     types: [dependency-released]
-  workflow_dispatch:
-    inputs:
-      dependency:
-        description: "Dependency name (example: dep-beta)"
-        required: true
-      version:
-        description: "Version tag to set (example: v0.0.1)"
-        required: true
 
 permissions:
   contents: write
@@ -27,8 +19,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          DEPENDENCY="${{ github.event.client_payload.dependency || github.event.inputs.dependency }}"
-          VERSION="${{ github.event.client_payload.version || github.event.inputs.version }}"
+          DEPENDENCY="${{ github.event.client_payload.dependency }}"
+          VERSION="${{ github.event.client_payload.version }}"
 
           if [ -z "${DEPENDENCY}" ] || [ -z "${VERSION}" ]; then
             echo "Missing dependency or version input."
