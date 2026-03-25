@@ -1,0 +1,12 @@
+name: Dispatch Smoke
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [dependency-released]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "ok"
