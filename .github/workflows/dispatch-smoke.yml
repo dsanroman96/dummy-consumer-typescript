@@ -1,7 +1,6 @@
 name: Update dependency version
 
 on:
-  workflow_dispatch:
   repository_dispatch:
     types: [dependency-released]
 
@@ -20,8 +19,20 @@ jobs:
         run: |
           set -euo pipefail
 
-          DEPENDENCY="${{ github.event.client_payload.dependency }}"
-          VERSION="${{ github.event.client_payload.version }}"
+          readarray -t PAYLOAD < <(python3 - <<'PY'
+import json
+import os
+
+with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as fh:
+    event = json.load(fh)
+
+payload = event.get("client_payload", {})
+print(payload.get("dependency", ""))
+print(payload.get("version", ""))
+PY
+          )
+          DEPENDENCY="${PAYLOAD[0]}"
+          VERSION="${PAYLOAD[1]}"
 
           if [ -z "${DEPENDENCY}" ] || [ -z "${VERSION}" ]; then
             echo "Missing dependency or version input."
