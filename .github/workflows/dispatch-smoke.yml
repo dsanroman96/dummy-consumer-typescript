@@ -62,23 +62,7 @@ PY
           OWNER="dsanroman96"
           TARGET_SPEC="github:${OWNER}/${DEPENDENCY}#${NEXT_VERSION}"
 
-          CHANGED="$(DEPENDENCY="${DEPENDENCY}" TARGET_SPEC="${TARGET_SPEC}" node - <<'JS'
-const fs = require("fs");
-const path = "package.json";
-const dependency = process.env.DEPENDENCY;
-const targetSpec = process.env.TARGET_SPEC;
-const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
-pkg.dependencies = pkg.dependencies || {};
-const current = pkg.dependencies[dependency] || "";
-if (current === targetSpec) {
-  process.stdout.write("false");
-  process.exit(0);
-}
-pkg.dependencies[dependency] = targetSpec;
-fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n");
-process.stdout.write("true");
-JS
-)"
+          CHANGED="$(DEPENDENCY="${DEPENDENCY}" TARGET_SPEC="${TARGET_SPEC}" node -e "const fs=require('fs'); const path='package.json'; const dependency=process.env.DEPENDENCY; const targetSpec=process.env.TARGET_SPEC; const pkg=JSON.parse(fs.readFileSync(path,'utf8')); pkg.dependencies=pkg.dependencies||{}; const current=pkg.dependencies[dependency]||''; if(current===targetSpec){process.stdout.write('false'); process.exit(0);} pkg.dependencies[dependency]=targetSpec; fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\\n'); process.stdout.write('true');")"
           echo "changed=${CHANGED}" >> "${GITHUB_OUTPUT}"
 
       - name: Commit and push
